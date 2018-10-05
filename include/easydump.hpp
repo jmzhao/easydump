@@ -119,8 +119,8 @@ namespace easydump {
   template<typename elem_type, typename IO>
   inline void dump(const std::vector<elem_type> &v, IO &io) {
     constexpr auto delim = get_delim<decltype(v)>::value;
-    _dump(v.size(), io); _dump(delim, io);
-    for ( const elem_type &elem : v) { dump(elem, io); _dump(delim, io);}
+    _dump(v.size(), io);
+    for ( const elem_type &elem : v) {_dump(delim, io); dump(elem, io); }
   }
 
   template<typename elem_type, typename IO>
@@ -138,11 +138,11 @@ namespace easydump {
   template<typename key_type, typename value_type, typename IO>
   inline void dump(const std::map<key_type, value_type> &m, IO &io) {
     constexpr auto delim = get_delim<decltype(m)>::value;
-    _dump(m.size(), io); _dump(delim, io);
+    _dump(m.size(), io);
     for ( const auto &kv : m) {
+      _dump(delim, io);
       constexpr auto delim_kv = get_delim<decltype(kv)>::value;
       dump(kv.first, io); _dump(delim_kv, io); dump(kv.second, io);
-      _dump(delim, io);
     }
   }
 
@@ -152,7 +152,7 @@ namespace easydump {
     m.clear();
     for ( decltype(n) i = 0; i < n; i++ ) {
       std::pair<key_type, value_type> p;
-      _load(p, io);
+      load(p.first, io); load(p.second, io);
       m[p.first] = p.second;
     }
   }
