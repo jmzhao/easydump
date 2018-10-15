@@ -1,3 +1,6 @@
+from .common import CompactDumping, CompactLoading, Dumper, Loader
+
+
 class TXTIStream :
     def __init__(self, i) :
         self.i = i
@@ -33,3 +36,10 @@ class TXTLoader (Loader, CompactLoading, TXTBaseLoader) :
 class TXTDumper (Dumper, CompactDumping, TXTBaseDumper) :
     def __init__(self, fp, stream_wrapper = None) :
         self.stream = stream_wrapper(fp) if stream_wrapper else fp
+
+
+def load(type_var, fp, _Loader = TXTLoader) :
+    return _Loader(fp).load(type_var)
+
+def dump(value, fp, _Dumper = TXTDumper) :
+    return _Dumper(fp).dump(value)

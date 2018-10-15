@@ -1,5 +1,8 @@
 import struct
 
+from .common import CompactDumping, CompactLoading, Dumper, Loader
+
+
 struct_int = struct.Struct('i')
 struct_float = struct.Struct('d')
 
@@ -22,3 +25,10 @@ class BINLoader (Loader, CompactLoading, BINBaseLoader) :
 class BINDumper (Dumper, CompactDumping, BINBaseDumper) :
     def __init__(self, fp, stream_wrapper = None) :
         self.stream = stream_wrapper(fp) if stream_wrapper else fp
+
+
+def load(type_var, fp, _Loader = BINLoader) :
+    return _Loader(fp).load(type_var)
+
+def dump(value, fp, _Dumper = BINDumper) :
+    return _Dumper(fp).dump(value)
