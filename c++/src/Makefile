@@ -1,5 +1,8 @@
+demo: demo.cpp ../include/easydump.hpp
+	g++ -std=c++14 -o demo demo.cpp
+
 example: example.cpp ../include/easydump.hpp
-	g++ -std=c++14  -o example example.cpp && ./example
+	g++ -std=c++14 -o example example.cpp && ./example
 
 .PHONY: all clear
 

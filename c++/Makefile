@@ -5,7 +5,7 @@ SUBDIRS = test src
 all: $(SUBDIRS)
 
 $(SUBDIRS):
-	$(MAKE) -C $@
+	$(MAKE) all -C $@ 
 
 clear:
 	for D in $(SUBDIRS); do \
