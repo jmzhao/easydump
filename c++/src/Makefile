@@ -9,4 +9,4 @@ example: example.cpp ../include/easydump.hpp
 all: example
 
 clear:
-	rm -rf example
+	rm -rf example demo
