@@ -1,15 +1,10 @@
 from collections import namedtuple
 
-class OStream :
-    def __init__(self, o) :
-        self.o = o
-    def write(self, x) :
-        return self.o.write(x)
 
-class IStream :
+class TXTIStream :
     def __init__(self, i) :
         self.i = i
-        self.stream_iter = iter(IStream.tokens(i))
+        self.stream_iter = iter(self.__class__.tokens(i))
     @staticmethod
     def tokens(io) :
         for line in io :
@@ -29,10 +24,6 @@ class Dumper :
 
 
 class CompactLoading :
-    def load_int(self, x) :
-        return self._load(x)
-    def load_float(self, x) :
-        return self._load(x)
     def load_tuple(self, x) :
         return tuple(self.load(xi) for xi in x)
     def load_list(self, x) :
@@ -45,10 +36,6 @@ class CompactLoading :
         return dict(self.load(t) for _ in range(n))
 
 class CompactDumping :
-    def dump_int(self, x) :
-        return self._dump(x)
-    def dump_float(self, x) :
-        return self._dump(x)
     def dump_tuple(self, x) :
         return tuple(self.dump(xi) for xi in x)
     def dump_list(self, x) :
@@ -60,18 +47,50 @@ class CompactDumping :
 
 
 class TXTBaseLoader :
-    def _load(self, type_val) :
-        return type(type_val)(self.stream.read())
+    def load_int(self, _) :
+        return int(self.stream.read())
+    def load_float(self, _) :
+        return float(self.stream.read())
 
 class TXTBaseDumper :
     def _dump(self, value) :
         self.stream.write(str(value))
         self.stream.write(' ')
+    def dump_int(self, value) :
+        self._dump(value)
+    def dump_float(self, value) :
+        self._dump(value)
 
 class TXTLoader (Loader, CompactLoading, TXTBaseLoader) :
-    def __init__(self, stream) :
-        self.stream = stream
+    def __init__(self, fp, stream_wrapper = TXTIStream) :
+        self.stream = stream_wrapper(fp) if stream_wrapper else fp
 
 class TXTDumper (Dumper, CompactDumping, TXTBaseDumper) :
-    def __init__(self, stream) :
-        self.stream = stream
+    def __init__(self, fp, stream_wrapper = None) :
+        self.stream = stream_wrapper(fp) if stream_wrapper else fp
+
+
+import struct
+
+struct_int = struct.Struct('i')
+struct_float = struct.Struct('d')
+
+class BINBaseLoader :
+    def load_int(self, _) :
+        return struct_int.unpack(self.stream.read(struct_int.size))[0]
+    def load_float(self, _) :
+        return struct_float.unpack(self.stream.read(struct_float.size))[0]
+
+class BINBaseDumper :
+    def dump_int(self, x) :
+        return self.stream.write(struct_int.pack(x))
+    def dump_float(self, x) :
+        return self.stream.write(struct_float.pack(x))
+
+class BINLoader (Loader, CompactLoading, BINBaseLoader) :
+    def __init__(self, fp, stream_wrapper = None) :
+        self.stream = stream_wrapper(fp) if stream_wrapper else fp
+
+class BINDumper (Dumper, CompactDumping, BINBaseDumper) :
+    def __init__(self, fp, stream_wrapper = None) :
+        self.stream = stream_wrapper(fp) if stream_wrapper else fp
