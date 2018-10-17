@@ -1,0 +1,12 @@
+# Custom ignores
+# MAC OS
+.DS_Store
+
+# IPython notebook
+*.ipynb
+
+# Results
+*results/
+
+# Datasets
+*datasets/
