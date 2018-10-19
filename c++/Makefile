@@ -5,9 +5,9 @@ SUBDIRS = test src
 all: $(SUBDIRS)
 
 $(SUBDIRS):
-	$(MAKE) all -C $@ 
+	$(MAKE) all -C $@
 
-clear:
+clean:
 	for D in $(SUBDIRS); do \
-		make clear -C $$D; \
+		make clean -C $$D; \
 	done

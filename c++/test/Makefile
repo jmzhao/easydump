@@ -4,5 +4,5 @@ main: main.cpp catch.hpp ../include/easydump.hpp
 .PHONY: all clear
 all: main
 
-clear:
+clean:
 	rm -rf main

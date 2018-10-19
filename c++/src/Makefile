@@ -8,5 +8,5 @@ example: example.cpp ../include/easydump.hpp
 
 all: example
 
-clear:
+clean:
 	rm -rf example demo
