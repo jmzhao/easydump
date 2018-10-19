@@ -6,6 +6,7 @@
 #include <tuple> // make_tuple, get
 #include <type_traits> // integral_constant
 #include <vector>
+#include <valarray>
 
 #define EASYDUMP__VERSION_MAJOR 0
 #define EASYDUMP__VERSION_MINOR 0
@@ -107,24 +108,58 @@ namespace txt{
     1 + std::max(depth<T1>::value, depth<T2>::value)> {} ;
 
 
+  // lists
+  template<typename T, typename IO>
+  inline void dump_list(const T &v, IO &io);
+
+  template<typename T, typename IO>
+  inline void load_list(T &v, IO &io);
+
   // std::vector
   template<typename elem_type, typename IO>
-  inline void dump(const std::vector<elem_type> &v, IO &io) {
-    constexpr auto delim = get_delim<decltype(v)>::value;
-    _dump(v.size(), io);
-    for ( const elem_type &elem : v) {_dump(delim, io); dump(elem, io); }
+  inline void dump(const std::vector<elem_type> &x, IO &io) {
+    dump_list(x, io);
   }
 
   template<typename elem_type, typename IO>
-  inline void load(std::vector<elem_type> &v, IO &io) {
-    decltype(v.size()) n; _load(n, io);
-    v.resize(n);
-    for ( elem_type &elem : v) _load(elem, io);
+  inline void load(std::vector<elem_type> &x, IO &io) {
+    load_list(x, io);
   }
 
   template<typename elem_type>
   struct depth<std::vector<elem_type>> : std::integral_constant<unsigned,
     1 + depth<elem_type>::value> {} ;
+
+  // std::valarray
+  template<typename elem_type, typename IO>
+  inline void dump(const std::valarray<elem_type> &x, IO &io) {
+    dump_list(x, io);
+  }
+
+  template<typename elem_type, typename IO>
+  inline void load(std::valarray<elem_type> &x, IO &io) {
+    load_list(x, io);
+  }
+
+  template<typename elem_type>
+  struct depth<std::valarray<elem_type>> : std::integral_constant<unsigned,
+    1 + depth<elem_type>::value> {} ;
+
+  // list
+  template<typename T, typename IO>
+  inline void dump_list(const T &v, IO &io) {
+    constexpr auto delim = get_delim<decltype(v)>::value;
+    _dump(v.size(), io);
+    for ( const auto &elem : v) {_dump(delim, io); dump(elem, io); }
+  }
+
+  template<typename T, typename IO>
+  inline void load_list(T &v, IO &io) {
+    decltype(v.size()) n; _load(n, io);
+    v.resize(n);
+    for ( auto &elem : v) load(elem, io);
+  }
+
 
   // std::map
   template<typename key_type, typename value_type, typename IO>
@@ -179,6 +214,17 @@ namespace bin {
   inline void load(T &x, IO &io);
 
 
+  // bool
+  template<typename IO>
+  inline void dump(const bool &x, IO &io) {
+    _dump(x, io);
+  }
+
+  template<typename IO>
+  inline void load(bool &x, IO &io) {
+    _load(x, io);
+  }
+
   // int
   template<typename IO>
   inline void dump(const int &x, IO &io) {
@@ -215,18 +261,48 @@ namespace bin {
   }
 
 
+  // lists
+  template<typename T, typename IO>
+  inline void dump_list(const T &v, IO &io);
+
+  template<typename T, typename IO>
+  inline void load_list(T &v, IO &io);
+
   // std::vector
   template<typename elem_type, typename IO>
-  inline void dump(const std::vector<elem_type> &v, IO &io) {
-    int n = v.size(); _dump(n, io);
-    for ( const elem_type &elem : v) dump(elem, io);
+  inline void dump(const std::vector<elem_type> &x, IO &io) {
+    dump_list(x, io);
   }
 
   template<typename elem_type, typename IO>
-  inline void load(std::vector<elem_type> &v, IO &io) {
+  inline void load(std::vector<elem_type> &x, IO &io) {
+    load_list(x, io);
+  }
+
+  // std::valarray
+  template<typename elem_type, typename IO>
+  inline void dump(const std::valarray<elem_type> &x, IO &io) {
+    dump_list(x, io);
+  }
+
+  template<typename elem_type, typename IO>
+  inline void load(std::valarray<elem_type> &x, IO &io) {
+    load_list(x, io);
+  }
+
+  // list
+  template<typename T, typename IO>
+  inline void dump_list(const T &x, IO &io) {
+    int n = x.size(); _dump(n, io);
+    for ( const auto &elem : x) dump(elem, io);
+    // for ( auto it = begin(x); it != end(x); it++ ) dump(*it, io);
+  }
+
+  template<typename T, typename IO>
+  inline void load_list(T &x, IO &io) {
     int n; _load(n, io);
-    v.resize(n);
-    for ( elem_type &elem : v) _load(elem, io);
+    x.resize(n);
+    for ( auto &elem : x) _load(elem, io);
   }
 
 

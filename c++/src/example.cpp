@@ -60,16 +60,16 @@ int main () {
 
 
   out = std::ostringstream(binary_flag);
-  std::cout << "dump std::vector:" << std::endl;
-  auto v = std::vector<double>({1, 2, 3, 4, 5});
+  std::cout << "dump std::valarray:" << std::endl;
+  auto v = std::valarray<double>({1, 2, 3, 4, 5});
   dump(v, out);
   std::cout << out.str() << std::endl;
 
   in = std::istringstream(out.str(), binary_flag);
-  std::cout << "load std::vector:...";
+  std::cout << "load std::valarray:...";
   decltype(v) v2;
   load(v2, in);
-  assert(*v.rbegin() == *v2.rbegin());
+  assert(v[v.size()-1] == v2[v.size()-1]);
   std::cout << "success!" << std::endl;
 
 
@@ -86,21 +86,43 @@ int main () {
   assert(*m.rbegin() == *m2.rbegin());
   std::cout << "success!" << std::endl;
 
-  out = std::ostringstream(binary_flag);
-  std::cout << "dump nested type:" << std::endl;
-  auto nested = std::map<int, std::vector<int>> {
-    {1, {1, 2, 3, 4, 5}},
-    {2, {}},
-  };
-  dump(nested, out);
-  std::cout << out.str() << std::endl;
+  {
+    out = std::ostringstream(binary_flag);
+    std::cout << "dump nested type:" << std::endl;
+    auto nested = std::map<int, std::valarray<int>> {
+      {1, {1, 2, 3, 4, 5}},
+      {2, {}},
+      {3, {9, 8, 7}}
+    };
+    dump(nested, out);
+    std::cout << out.str() << std::endl;
 
-  in = std::istringstream(out.str(), binary_flag);
-  std::cout << "load nested type:...";
-  decltype(nested) nested2;
-  load(nested2, in);
-  assert(*nested.rbegin() == *nested2.rbegin());
-  std::cout << "success!" << std::endl;
+    in = std::istringstream(out.str(), binary_flag);
+    std::cout << "load nested type:...";
+    decltype(nested) nested2;
+    load(nested2, in);
+    assert(nested.rbegin()->second[1] == nested2.rbegin()->second[1]);
+    std::cout << "success!" << std::endl;
+  }
+
+  {
+    out = std::ostringstream(binary_flag);
+    std::cout << "dump nested type 2:" << std::endl;
+    auto nested = std::vector<std::valarray<double>> {
+      {1.1, 2, 3, 4, 5},
+      {},
+      {9, 8, 7.5}
+    };
+    dump(nested, out);
+    std::cout << out.str() << std::endl;
+
+    in = std::istringstream(out.str(), binary_flag);
+    std::cout << "load nested type 2:...";
+    decltype(nested) nested2;
+    load(nested2, in);
+    assert(nested[2][1] == nested2[2][1]);
+    std::cout << "success!" << std::endl;
+  }
 
 
   return 0;
