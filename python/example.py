@@ -8,33 +8,29 @@ nested = {
 }
 
 with open('./out_list.txt', 'w') as fout :
-    dumper = easydump.TXTDumper(fout)
+    dumper = easydump.txt.TXTDumper(fout)
     dumper.dump(l)
 with open('./out_list.txt', 'r') as fin :
-    loader = easydump.TXTLoader(fin)
+    loader = easydump.txt.TXTLoader(fin)
     l2 = loader.load(l)
 assert(l == l2)
 
 with open('./out_nested.txt', 'w') as fout :
-    dumper = easydump.TXTDumper(fout)
-    dumper.dump(nested)
+    easydump.txt.dump(nested, fout)
 with open('./out_nested.txt', 'r') as fin :
-    loader = easydump.TXTLoader(fin)
-    nested2 = loader.load(nested)
+    nested2 = easydump.txt.load(nested, fin)
 assert(nested == nested2)
 
 with open('./out_list.bin', 'bw') as fout :
-    dumper = easydump.BINDumper(fout)
+    dumper = easydump.bin.BINDumper(fout)
     dumper.dump(l)
 with open('./out_list.bin', 'br') as fin :
-    loader = easydump.BINLoader(fin)
+    loader = easydump.bin.BINLoader(fin)
     l2 = loader.load(l)
 assert(l == l2)
 
 with open('./out_nested.bin', 'bw') as fout :
-    dumper = easydump.BINDumper(fout)
-    dumper.dump(nested)
+    easydump.bin.dump(nested, fout)
 with open('./out_nested.bin', 'br') as fin :
-    loader = easydump.BINLoader(fin)
-    nested2 = loader.load(nested)
+    nested2 = easydump.bin.load(nested, fin)
 assert(nested == nested2)
