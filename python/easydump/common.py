@@ -4,7 +4,13 @@ class Loader :
 
 class Dumper :
     def dump(self, value) :
-        return getattr(self, 'dump_%s'%(type(value).__name__))(value)
+        try :
+            return getattr(self, 'dump_%s'%(type(value).__name__))(value)
+        except AttributeError as e :
+            for base in (tuple, list, dict) :
+                if isinstance(value, base) :
+                    return getattr(self, 'dump_%s'%(base.__name__))(value)
+            raise e
 
 
 class CompactLoading :

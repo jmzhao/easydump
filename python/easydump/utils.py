@@ -9,7 +9,7 @@ def smart_load(type_var, filename, filetype=None) :
         with open(filename, 'r') as f :
             return txt.load(type_var, f)
     else :
-        raise ValueError("Not supported file type: '{}'".format(filename))
+        raise ValueError("Not supported file type: '{}'".format(filetype))
 
 def smart_dump(var, filename, filetype=None) :
     filetype = filetype or filename[-3:]
@@ -20,7 +20,7 @@ def smart_dump(var, filename, filetype=None) :
         with open(filename, 'w') as f :
             return txt.dump(var, f)
     else :
-        raise ValueError("Not supported file type: '{}'".format(filename))
+        raise ValueError("Not supported file type: '{}'".format(filetype))
 
 def parse_typestring(s) :
     '''parse a type string into a type var which is expected by `smart_load`.
@@ -77,8 +77,10 @@ def gen_typestring(v) :
         return 'double'
     elif isinstance(v, int) :
         return 'int'
+    elif isinstance(v, str) :
+        return 'string'
     else :
-        raise ValueError("Value type '{}' not supported.".format(type(v)))
+        raise ValueError("Value type '{}' not supported.".format(type(v).__name__))
 
 
 if __name__ == "__main__":
